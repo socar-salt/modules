@@ -1,19 +1,76 @@
-plugins {
-    id 'org.springframework.boot' version '2.1.5.RELEASE'
-    id 'java'
+buildscript {
+    ext {
+        springBootVersion = '2.1.5.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath "io.spring.gradle:dependency-management-plugin:0.6.0.RELEASE"
+    }
 }
 
-apply plugin: 'io.spring.dependency-management'
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
 
-group = 'salt.kyoto'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
+    group = 'com.salt'
+    version = '0.0.1-SNAPSHOT'
+    sourceCompatibility = 1.8
 
-repositories {
-    mavenCentral()
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+//        compile('org.springframework.boot:spring-boot-starter-security')
+//        compile('com.fasterxml.jackson.datatype:jackson-datatype-jsr310')
+//        compile('org.springframework.data:spring-data-rest-hal-browser')
+//
+//        runtime('org.springframework.boot:spring-boot-devtools')
+//        runtime('mysql:mysql-connector-java')
+
+//        testCompile('org.springframework.security:spring-security-test')
+
+        compileOnly('org.projectlombok:lombok')
+        compile('org.springframework.boot:spring-boot-starter-jdbc')
+        testCompile group: 'junit', name: 'junit', version: '4.12'
+        testCompile('org.springframework.boot:spring-boot-starter-test')
+
+        runtime('mysql:mysql-connector-java')
+        runtime('com.h2database:h2')
+    }
 }
 
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+project(':module-common') {
+    dependencies {
+        compile('org.springframework.boot:spring-boot-starter-data-jpa')
+
+    }
+}
+
+project(':module-web') {
+    dependencies {
+        compile project(':module-common')
+        compile('org.springframework.boot:spring-boot-starter-web')
+    }
+}
+
+project(':module-api') {
+    dependencies {
+        compile project(':module-common')
+        compile('org.springframework.boot:spring-boot-starter-web')
+    }
+}
+
+project('module-batch') {
+    dependencies {
+        compile project(':module-common')
+        compile('org.springframework.boot:spring-boot-starter-batch')
+        testCompile('org.springframework.batch:spring-batch-test')
+    }
 }
